@@ -3,7 +3,7 @@
     <button @click="pushData()">추가</button>
     <button @click="popData()">삭제</button>
 
-    <DonutChart :width="500" :height="500" :data="data" />
+    <DonutChart :width="450" :height="450" :data="data" />
   </div>
 </template>
 
@@ -14,23 +14,23 @@ import DonutChart from "../../components/Donut/index.vue";
 const appendData = ref(1);
 const data = ref([
   {
-    key: "A",
+    key: "Team Tokens",
     value: 100,
   },
   {
-    key: "B",
+    key: "Public Sale",
     value: 60,
   },
   {
-    key: "C",
+    key: "Option pool",
     value: 100,
   },
   {
-    key: "D",
+    key: "Foundation",
     value: 50,
   },
   {
-    key: "E",
+    key: "Reserved",
     value: 100,
   },
 ]);

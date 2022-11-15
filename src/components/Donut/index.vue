@@ -94,7 +94,7 @@ const initChart = () => {
   chartItem
     .append("path")
     .transition()
-    .duration(2000)
+    .duration(1500)
     .attrTween("d", (d: any) => {
       const originalEnd = d.endAngle;
       return (t: number) => {
@@ -114,7 +114,7 @@ const initChart = () => {
     .data(chartData)
     .append("path")
     .transition()
-    .duration(2500)
+    .duration(2000)
     .attrTween("d", (d: PieArcDatum<any>) => {
       const originalEnd = d.endAngle - 0.06;
       return (t: number) => {
