@@ -1,3 +1,4 @@
+import { onMounted } from "vue";
 import {
   createRouter,
   createWebHashHistory,
@@ -6,6 +7,7 @@ import {
 } from "vue-router";
 import Bar from "../views/bar-view/index.vue";
 import Donut from "../views/donut-view/index.vue";
+import MultiBar from "../views/multi-bar-view/index.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -17,6 +19,11 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/donut",
     name: "DonutView",
     component: Donut,
+  },
+  {
+    path: "/multi-bar",
+    name: "MultiBar",
+    component: MultiBar,
   },
 ];
 

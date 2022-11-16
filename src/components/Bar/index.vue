@@ -76,7 +76,7 @@ const initChart = () => {
         .text(props.yLabel)
     );
 
-  const test = svg
+  svg
     .append("g")
     .attr("class", "chart")
     .selectAll("rect")
@@ -91,20 +91,6 @@ const initChart = () => {
     .attr("height", (i) => yScale(0) - yScale(Y[i]))
     .attr("transform", (i) => `translate(0,-${yScale(0) - yScale(Y[i])})`)
     .attr("class", "bar");
-  // svg
-  // .append("g")
-  // .attr("class", "chart")
-  // .selectAll("rect")
-  // .data(I)
-  // .join("rect")
-  // .attr("x", (i: number) => xScale(X[i]))
-  // .attr("y", (i) => yScale(Y[i]))
-  // .attr("width", xScale.bandwidth())
-  // .attr("fill", (i) => colors[i % colors.length])
-  // .transition()
-  // .duration(2000)
-  // .attr("height", (i) => yScale(0) - yScale(Y[i]))
-  // .attr("class", "bar");
 
   //밑 축
   svg
