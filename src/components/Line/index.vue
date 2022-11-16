@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import * as d3 from "d3";
-import { onMounted, ref, watch } from "vue";
+import * as d3 from 'd3';
+import { onMounted, ref, watch } from 'vue';
 
 export interface BarChartOption {
   width: number;
@@ -27,71 +27,82 @@ const props = withDefaults(defineProps<BarChartOption>(), {
 });
 
 const initChart = () => {
-  var dataset1 = [
-    [1, 1],
-    [12, 20],
-    [24, 36],
-    [32, 50],
-    [40, 70],
-    [50, 100],
-    [55, 106],
-    [65, 123],
-    [73, 130],
-    [78, 134],
-    [83, 136],
-    [89, 138],
-    [100, 140],
+  const dataset = [
+    {
+      name: 'leehakjoo',
+      values: {
+        a: 1,
+        b: 2,
+        c: 3,
+      },
+    },
   ];
+  const categories = Object.keys(dataset[0].values);
+  const xx = d3.map(categories, (d) => d);
+  const xxDomain = new d3.InternSet(xx);
+  const xxRange = [margin.left, props.width - margin.right];
+  const xxScale = d3.scaleBand(xxDomain, xxRange).padding(1);
+  var dataset1 = [
+    ['a', 1],
+    ['b', 20],
+    ['c', 36],
+    ['d', 50],
+    ['e', 70],
+    ['f', 100],
+    ['g', 106],
+    ['h', 123],
+    ['i', 130],
+  ];
+  const x = d3.map(dataset1, (d: any) => d[0]);
 
+  const xDomain = new d3.InternSet(x);
+  const xRange = [margin.left, props.width - margin.right];
+  const xScale = d3.scaleBand(xDomain, xRange).padding(1);
   // Step 3
   const svg = d3
-    .select(".container")
-    .append("svg")
-    .attr("width", props.width)
-    .attr("height", props.height)
-    .attr("viewBox", [0, 0, props.width, props.height + 100])
-    .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
-    .attr("class", "svg-container");
+    .select('.container')
+    .append('svg')
+    .attr('width', props.width)
+    .attr('height', props.height)
+    .attr('viewBox', [0, 0, props.width, props.height + 100])
+    .attr('style', 'max-width: 100%; height: auto; height: intrinsic;')
+    .attr('class', 'svg-container');
 
   var width = props.width;
   var height = props.height;
 
   // Step 4
-  var xScale = d3
-      .scaleLinear()
-      .domain([0, 100])
-      .range([margin.left, props.width - margin.right]),
-    yScale = d3
-      .scaleLinear()
-      .domain([0, 140])
-      .range([props.height - margin.bottom, margin.top]);
+  const yScale = d3
+    .scaleLinear()
+    .domain([0, 140])
+    .range([props.height - margin.bottom, margin.top]);
 
-  var g = svg.append("g").attr("transform", `translate(${margin.left}, 0)`);
+  var g = svg.append('g').attr('transform', `translate(${margin.left}, 0)`);
 
   // Step 6
-  g.append("g")
-    .attr("transform", "translate(0," + (height - margin.top) + ")")
+  g.append('g')
+    .attr('transform', 'translate(0,' + (height - margin.top) + ')')
     .call(d3.axisBottom(xScale));
-  g.append("g")
+  g.append('g')
     .call(d3.axisLeft(yScale).ticks(props.height / 100))
-    .attr("transform", `translate(${margin.left}, 0)`);
+    .attr('transform', `translate(${margin.left}, 0)`);
 
   // Step 7
   svg
-    .append("g")
-    .selectAll("dot")
+    .append('g')
+    .selectAll('dot')
     .data(dataset1)
     .enter()
-    .append("circle")
-    .attr("cx", function (d) {
-      return xScale(d[0]);
+    .append('circle')
+    .attr('cx', function (d, i) {
+      return xScale(x[i]);
     })
-    .attr("cy", function (d) {
+    .attr('cy', function (d) {
       return yScale(d[1]);
     })
-    .attr("r", 3)
-    .attr("transform", `translate(${margin.left}, 0)`)
-    .style("fill", "#CC0000");
+    .attr('r', 3)
+    .attr('transform', `translate(${margin.left}, 0)`)
+    .style('fill', '#CC0000');
 
   // Step 8
   var line = d3
@@ -105,14 +116,14 @@ const initChart = () => {
     .curve(d3.curveMonotoneX);
 
   svg
-    .append("path")
+    .append('path')
     .datum(dataset1)
-    .attr("class", "line")
-    .attr("d", (d) => line(d))
-    .style("fill", "none")
-    .style("stroke", "#CC0000")
-    .attr("transform", `translate(${margin.left}, 0)`)
-    .style("stroke-width", "2");
+    .attr('class', 'line')
+    .attr('d', (d) => line(d))
+    .style('fill', 'none')
+    .style('stroke', '#CC0000')
+    .attr('transform', `translate(${margin.left}, 0)`)
+    .style('stroke-width', '2');
 };
 
 const updateChart = () => {};
