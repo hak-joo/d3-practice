@@ -27,37 +27,50 @@ const props = withDefaults(defineProps<BarChartOption>(), {
 });
 
 const initChart = () => {
-  const dataset = [
+  const dataset: any[] = [
     {
       name: 'leehakjoo',
       values: {
-        a: 1,
-        b: 2,
-        c: 3,
+        a: 10,
+        b: 40,
+        c: 60,
+      },
+    },
+    {
+      name: 'sadsa',
+      values: {
+        a: 50,
+        b: 20,
+        c: 10,
+      },
+    },
+    {
+      name: 'qweqwewqe',
+      values: {
+        a: 100,
+        b: 50,
+        c: 40,
       },
     },
   ];
-  const categories = Object.keys(dataset[0].values);
-  const xx = d3.map(categories, (d) => d);
-  const xxDomain = new d3.InternSet(xx);
-  const xxRange = [margin.left, props.width - margin.right];
-  const xxScale = d3.scaleBand(xxDomain, xxRange).padding(1);
-  var dataset1 = [
-    ['a', 1],
-    ['b', 20],
-    ['c', 36],
-    ['d', 50],
-    ['e', 70],
-    ['f', 100],
-    ['g', 106],
-    ['h', 123],
-    ['i', 130],
-  ];
-  const x = d3.map(dataset1, (d: any) => d[0]);
 
+  const categories = Object.keys(dataset[0].values);
+  const x = d3.map(categories, (d) => d);
   const xDomain = new d3.InternSet(x);
   const xRange = [margin.left, props.width - margin.right];
   const xScale = d3.scaleBand(xDomain, xRange).padding(1);
+  const z = d3.scaleOrdinal().range(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']);
+
+  var line = d3
+    .line()
+    .x((d: any) => {
+      return xScale(d.key) ?? 0;
+    })
+    .y(function (d: any) {
+      return yScale(d.value);
+    })
+    .curve(d3.curveMonotoneX);
+
   // Step 3
   const svg = d3
     .select('.container')
@@ -91,38 +104,51 @@ const initChart = () => {
   svg
     .append('g')
     .selectAll('dot')
-    .data(dataset1)
+    .data(dataset)
+    .enter()
+    .append('g')
+    .selectAll('circle')
+    .data((d: any) => {
+      console.log('d', d);
+      const res = categories.map((key) => ({ key: key, value: d.values[key], name: d.name }));
+      return res;
+    })
     .enter()
     .append('circle')
-    .attr('cx', function (d, i) {
-      return xScale(x[i]);
+    .attr('cx', (d, i) => {
+      return xScale(d.key);
     })
-    .attr('cy', function (d) {
-      return yScale(d[1]);
+    .attr('cy', function (d, i) {
+      return yScale(d.value);
     })
     .attr('r', 3)
     .attr('transform', `translate(${margin.left}, 0)`)
-    .style('fill', '#CC0000');
-
-  // Step 8
-  var line = d3
-    .line()
-    .x(function (d) {
-      return xScale(d[0]);
-    })
-    .y(function (d) {
-      return yScale(d[1]);
-    })
-    .curve(d3.curveMonotoneX);
+    .attr('fill', (d: any, i) => {
+      return z(d.name) as string;
+    });
 
   svg
+    .append('g')
+    .selectAll('paths')
+    .data(dataset)
+    .enter()
+    .append('g')
     .append('path')
-    .datum(dataset1)
-    .attr('class', 'line')
-    .attr('d', (d) => line(d))
-    .style('fill', 'none')
-    .style('stroke', '#CC0000')
+    .attr('d', (d, i) => {
+      const lineValues = categories.map((categorie) => {
+        return {
+          key: categorie,
+          value: d.values[categorie],
+          name: d.name,
+        };
+      });
+      return line(lineValues);
+    })
     .attr('transform', `translate(${margin.left}, 0)`)
+    .style('fill', 'none')
+    .style('stroke', (d: any, i: number) => {
+      return z(d.name) as string;
+    })
     .style('stroke-width', '2');
 };
 
