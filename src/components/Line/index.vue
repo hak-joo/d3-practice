@@ -31,9 +31,9 @@ const initChart = () => {
     {
       name: 'leehakjoo',
       values: {
-        a: 10,
-        b: 40,
-        c: 60,
+        a: 100,
+        b: 10,
+        c: 100,
       },
     },
     {
@@ -127,7 +127,7 @@ const initChart = () => {
       return z(d.name) as string;
     });
 
-  svg
+  const lines = svg
     .append('g')
     .selectAll('paths')
     .data(dataset)
@@ -146,10 +146,23 @@ const initChart = () => {
     })
     .attr('transform', `translate(${margin.left}, 0)`)
     .style('fill', 'none')
-    .style('stroke', (d: any, i: number) => {
-      return z(d.name) as string;
-    })
     .style('stroke-width', '2');
+  const pathLengths = lines.nodes().map((node) => node.getTotalLength());
+  const transitionPath = d3.transition().ease(d3.easeSin).duration(2500);
+  console.log('pathLengths[0]', pathLengths[0]);
+
+  lines
+    .selectAll('path')
+    .attr('stroke-dashoffset', (d, i) => {
+      console.log(pathLengths[i]);
+      return pathLengths[i];
+    })
+    .attr('stroke-dasharray', (d, i) => pathLengths[i])
+    .transition(transitionPath)
+    .attr('stroke-dashoffset', (d, i) => 0)
+    .attr('fill', (d: any, i) => {
+      return z(d.name) as string;
+    });
 };
 
 const updateChart = () => {};
