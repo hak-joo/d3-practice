@@ -5,7 +5,7 @@
     <button @click="pushValue()">옵션 추가</button>
 
     <LineChart
-      :width="500"
+      :width="700"
       :height="500"
       :data="data"
       x-label="name"
@@ -21,34 +21,64 @@ const appendData = ref(1);
 
 const data = ref([
   {
-    name: "A",
+    name: "leehakjoo",
     values: {
-      "20221113": 70,
-      "20221114": 40,
+      a: 100,
+      b: 10,
+      c: 100,
+      d: 30,
+      e: 70,
     },
   },
-  //   {
-  //     name: "B",
-  //     values: {
-  //       "20221113": 70,
-  //       "20221114": 90,
-  //     },
-  //   },
-  //   {
-  //     name: "C",
-  //     values: {
-  //       "20221113": 70,
-  //       "20221114": 50,
-  //     },
-  //   },
+  {
+    name: "sadsa",
+    values: {
+      a: 50,
+      b: 20,
+      c: 10,
+      d: 70,
+      e: 80,
+    },
+  },
+  {
+    name: "qweqwewqe",
+    values: {
+      a: 100,
+      b: 50,
+      c: 40,
+      d: 10,
+      e: 90,
+    },
+  },
+  {
+    name: "kim",
+    values: {
+      a: 50,
+      b: 30,
+      c: 70,
+      d: 50,
+      e: 80,
+    },
+  },
+  {
+    name: "lqq",
+    values: {
+      a: 40,
+      b: 80,
+      c: 100,
+      d: 40,
+      e: 10,
+    },
+  },
 ]);
 
 const pushData = () => {
   data.value.push({
     name: "name" + appendData.value.toString(),
     values: {
-      math: 50,
-      eng: 60,
+      a: 40,
+      b: 20,
+      c: 40,
     },
   });
   appendData.value++;
@@ -59,7 +89,7 @@ const popData = () => {
 };
 const pushValue = () => {
   for (let i = 0; i < data.value.length; i++) {
-    data.value[i].values["kor"] = 100;
+    data.value[i].values["d"] = 50;
   }
 };
 </script>
