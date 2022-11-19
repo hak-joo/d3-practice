@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import * as d3 from 'd3';
-import { onMounted, ref, watch } from 'vue';
+import * as d3 from "d3";
+import { onMounted, ref, watch } from "vue";
 
 export interface BarChartOption {
   width: number;
@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<BarChartOption>(), {
 const initChart = () => {
   const dataset: any[] = [
     {
-      name: 'leehakjoo',
+      name: "leehakjoo",
       values: {
         a: 100,
         b: 10,
@@ -37,7 +37,7 @@ const initChart = () => {
       },
     },
     {
-      name: 'sadsa',
+      name: "sadsa",
       values: {
         a: 50,
         b: 20,
@@ -45,7 +45,7 @@ const initChart = () => {
       },
     },
     {
-      name: 'qweqwewqe',
+      name: "qweqwewqe",
       values: {
         a: 100,
         b: 50,
@@ -59,7 +59,17 @@ const initChart = () => {
   const xDomain = new d3.InternSet(x);
   const xRange = [margin.left, props.width - margin.right];
   const xScale = d3.scaleBand(xDomain, xRange).padding(1);
-  const z = d3.scaleOrdinal().range(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']);
+  const z = d3
+    .scaleOrdinal()
+    .range([
+      "#98abc5",
+      "#8a89a6",
+      "#7b6888",
+      "#6b486b",
+      "#a05d56",
+      "#d0743c",
+      "#ff8c00",
+    ]);
 
   var line = d3
     .line()
@@ -73,13 +83,13 @@ const initChart = () => {
 
   // Step 3
   const svg = d3
-    .select('.container')
-    .append('svg')
-    .attr('width', props.width)
-    .attr('height', props.height)
-    .attr('viewBox', [0, 0, props.width, props.height + 100])
-    .attr('style', 'max-width: 100%; height: auto; height: intrinsic;')
-    .attr('class', 'svg-container');
+    .select(".container")
+    .append("svg")
+    .attr("width", props.width)
+    .attr("height", props.height)
+    .attr("viewBox", [0, 0, props.width, props.height + 100])
+    .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+    .attr("class", "svg-container");
 
   var width = props.width;
   var height = props.height;
@@ -90,51 +100,55 @@ const initChart = () => {
     .domain([0, 140])
     .range([props.height - margin.bottom, margin.top]);
 
-  var g = svg.append('g').attr('transform', `translate(${margin.left}, 0)`);
+  var g = svg.append("g").attr("transform", `translate(${margin.left}, 0)`);
 
   // Step 6
-  g.append('g')
-    .attr('transform', 'translate(0,' + (height - margin.top) + ')')
+  g.append("g")
+    .attr("transform", "translate(0," + (height - margin.top) + ")")
     .call(d3.axisBottom(xScale));
-  g.append('g')
+  g.append("g")
     .call(d3.axisLeft(yScale).ticks(props.height / 100))
-    .attr('transform', `translate(${margin.left}, 0)`);
+    .attr("transform", `translate(${margin.left}, 0)`);
 
   // Step 7
   svg
-    .append('g')
-    .selectAll('dot')
+    .append("g")
+    .selectAll("dot")
     .data(dataset)
     .enter()
-    .append('g')
-    .selectAll('circle')
+    .append("g")
+    .selectAll("circle")
     .data((d: any) => {
-      console.log('d', d);
-      const res = categories.map((key) => ({ key: key, value: d.values[key], name: d.name }));
+      console.log("d", d);
+      const res = categories.map((key) => ({
+        key: key,
+        value: d.values[key],
+        name: d.name,
+      }));
       return res;
     })
     .enter()
-    .append('circle')
-    .attr('cx', (d, i) => {
+    .append("circle")
+    .attr("cx", (d, i) => {
       return xScale(d.key);
     })
-    .attr('cy', function (d, i) {
+    .attr("cy", function (d, i) {
       return yScale(d.value);
     })
-    .attr('r', 3)
-    .attr('transform', `translate(${margin.left}, 0)`)
-    .attr('fill', (d: any, i) => {
+    .attr("r", 3)
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .attr("fill", (d: any, i) => {
       return z(d.name) as string;
     });
 
   const lines = svg
-    .append('g')
-    .selectAll('paths')
+    .append("g")
+    .selectAll("paths")
     .data(dataset)
     .enter()
-    .append('g')
-    .append('path')
-    .attr('d', (d, i) => {
+    .append("g")
+    .append("path")
+    .attr("d", (d, i) => {
       const lineValues = categories.map((categorie) => {
         return {
           key: categorie,
@@ -144,23 +158,23 @@ const initChart = () => {
       });
       return line(lineValues);
     })
-    .attr('transform', `translate(${margin.left}, 0)`)
-    .style('fill', 'none')
-    .style('stroke-width', '2');
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .style("fill", "none")
+    .style("stroke-width", "2");
   const pathLengths = lines.nodes().map((node) => node.getTotalLength());
   const transitionPath = d3.transition().ease(d3.easeSin).duration(2500);
-  console.log('pathLengths[0]', pathLengths[0]);
+  console.log("pathLengths[0]", pathLengths[0]);
 
   lines
-    .selectAll('path')
-    .attr('stroke-dashoffset', (d, i) => {
+    .selectAll("path")
+    .attr("stroke-dashoffset", (d, i) => {
       console.log(pathLengths[i]);
       return pathLengths[i];
     })
-    .attr('stroke-dasharray', (d, i) => pathLengths[i])
+    .attr("stroke-dasharray", (d, i) => pathLengths[i])
     .transition(transitionPath)
-    .attr('stroke-dashoffset', (d, i) => 0)
-    .attr('fill', (d: any, i) => {
+    .attr("stroke-dashoffset", (d, i) => 0)
+    .attr("fill", (d: any, i) => {
       return z(d.name) as string;
     });
 };
