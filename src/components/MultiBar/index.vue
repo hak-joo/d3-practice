@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import * as d3 from "d3";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, watch } from "vue";
 
 export interface BarChartOption {
   width: number;
@@ -54,88 +54,9 @@ const initChart = () => {
     .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
     .attr("class", "svg-container");
 
-  const g = svg
+  svg
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  const keys = Object.keys(data[0].values);
-
-  x0.domain(data.map((d) => d.name));
-  x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-  y.domain([0, 100]);
-
-  g.append("g")
-    .selectAll("g")
-    .data(data)
-    .enter()
-    .append("g")
-    .attr("transform", (d) => "translate(" + x0(d.name) + ",0)")
-    .selectAll("rect")
-    .data((d) => {
-      return keys.map((key) => ({ key: key, value: d.values[key] }));
-    })
-    .enter()
-    .append("rect")
-    .attr("x", (d: any) => x1(d.key) ?? 0)
-    .attr("y", height)
-    .attr("width", x1.bandwidth())
-    .attr("fill", (d: any) => z(d.key) as string)
-    .transition()
-    .delay((d) => Math.random() * 500)
-    .duration(1000)
-    .attr("height", (d) => (d.value ? height - y(d.value) : 0))
-    .attr("transform", (d) => {
-      const transY = y(0) - y(d.value);
-      if (!transY) return "";
-      else return `translate(0,-${transY})`;
-    });
-
-  g.append("g")
-    .attr("class", "axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x0));
-
-  g.append("g")
-    .attr("class", "axis")
-    .call(d3.axisLeft(y).ticks(null, "s"))
-    .append("text")
-    .attr("x", 2)
-    .attr("y", y(y.ticks().pop()!) + 0.5)
-    .attr("dy", "0.32em")
-    .attr("fill", "#000")
-    .attr("font-weight", "bold")
-    .attr("text-anchor", "start");
-  // .text("Population");
-
-  const legend = g
-    .append("g")
-    .attr("font-family", "sans-serif")
-    .attr("font-size", 10)
-    .attr("text-anchor", "end")
-    .selectAll("g")
-    .data(keys.slice().reverse())
-    .enter()
-    .append("g")
-    .attr("transform", function (d, i) {
-      console.log("i", i);
-      return "translate(0," + i * 20 + ")";
-    });
-
-  legend
-    .append("rect")
-    .attr("x", width - 19)
-    .attr("width", 19)
-    .attr("height", 19)
-    .attr("fill", z);
-
-  legend
-    .append("text")
-    .attr("x", width - 24)
-    .attr("y", 9.5)
-    .attr("dy", "0.32em")
-    .text(function (d) {
-      return d;
-    });
 };
 
 const updateChart = () => {
@@ -232,6 +153,7 @@ watch(props.data, () => {
 
 onMounted(() => {
   initChart();
+  updateChart();
 });
 </script>
 
