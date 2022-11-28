@@ -5,11 +5,10 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from "vue";
 import * as d3 from "d3";
-import { PieArcDatum } from "d3";
 
 export interface DonutChartOption {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   data: any[];
 }
 const props = withDefaults(defineProps<DonutChartOption>(), {
@@ -22,9 +21,7 @@ const margin = 50;
 const radius = computed(() => Math.min(props.width, props.height) / 2 - margin);
 
 const totalValue = computed(() =>
-  props.data.reduce((sum, curr) => {
-    return sum + curr.value;
-  }, 0)
+  props.data.reduce((sum, curr) => sum + curr.value, 0)
 );
 
 const color = d3
@@ -50,12 +47,19 @@ const label = d3
 const createLabelLocation = (d: any) => {
   const startCoord = label.centroid(d);
   const endCoord = label.centroid(d);
+
   if (midAngle(d) < Math.PI) {
+    //우측
     startCoord[0] -= 10;
     endCoord[0] -= 40;
   } else {
-    startCoord[0] += 60;
-    endCoord[0] = startCoord[0] - 30;
+    if (props.width < 350) {
+      startCoord[0] += 40;
+      endCoord[0] = startCoord[0] - 30;
+    } else {
+      startCoord[0] += 50;
+      endCoord[0] = startCoord[0] - 30;
+    }
   }
   return [startCoord, endCoord, startCoord];
 };
@@ -77,101 +81,12 @@ const initChart = () => {
     .attr("width", props.width)
     .attr("height", props.height);
 
-  const g = svg
+  svg
     .append("g")
     .attr("class", "chart")
     .attr("transform", `translate(${props.width / 2},${props.height / 2})`);
 
-  const chartData = pie(props.data);
-
-  const chartItem = g
-    .selectAll(".chart__item")
-    .data(chartData)
-    .join("g")
-    .attr("class", "chart__item");
-
-  //도넛 테두리 배경 그리기
-  chartItem
-    .append("path")
-    .transition()
-    .duration(1500)
-    .attrTween("d", (d: any) => {
-      const originalEnd = d.endAngle;
-      return (t: number) => {
-        const currentAngle = d3.interpolate(
-          pie.startAngle()([]),
-          pie.endAngle()([])
-        )(t);
-        if (currentAngle < d.startAngle) return "";
-        d.endAngle = Math.min(currentAngle, originalEnd);
-        return pathBackGround(d as any);
-      };
-    })
-    .attr("fill", "#EBEBEB");
-
-  //도넛 안  색칠하기
-  chartItem
-    .data(chartData)
-    .append("path")
-    .transition()
-    .duration(2000)
-    .attrTween("d", (d: PieArcDatum<any>) => {
-      const originalEnd = d.endAngle - 0.06;
-      return (t: number) => {
-        const currentAngle = d3.interpolate(
-          pie.startAngle()([]),
-          pie.endAngle()([])
-        )(t);
-        if (currentAngle < d.startAngle) return "";
-        d.endAngle = Math.min(currentAngle, originalEnd);
-        return path(d);
-      };
-    })
-    .attr("fill", (d: any) => color(d.index) as string);
-
-  //Key 글씨 표현
-  chartItem
-    .append("text")
-    .attr("class", "chart__item__key")
-    .attr("transform", (d: any) => "translate(" + label.centroid(d) + ")")
-    .attr("dx", (d: any) => {
-      if (midAngle(d) > Math.PI) {
-        return `-${d.data.key.length * 5}px`;
-      } else return "0";
-    })
-    .transition()
-    .duration(1500)
-    .attr("id", "key")
-    .text((d: any) => d.data.key);
-
-  //Value 글씨 표현
-  chartItem
-    .append("text")
-    .attr("xlink:href", "#key")
-    .attr("dy", "1.5em")
-    .attr("dx", (d: any) => {
-      if (midAngle(d) > Math.PI) {
-        return `-${d.data.key.length * 5}px`;
-      } else return "0";
-    })
-    .attr("transform", (d) => "translate(" + label.centroid(d) + ")")
-    .text(
-      (d: any) =>
-        `${Math.ceil((d.value / totalValue.value) * 100)}% / ${d.value}`
-    )
-    .style("font-size", "10px");
-
-  //Donut Value indicator
-  chartItem
-    .data(chartData)
-    .append("polyline")
-    .transition()
-    .duration(1000)
-    .attr("stroke", (d: any) => color(d.index) as string)
-    .attr("stroke-width", 2)
-    .attr("points", (d: any) => {
-      return createLabelLocation(d);
-    });
+  updateChart();
 };
 
 const updateChart = () => {
@@ -190,11 +105,12 @@ const updateChart = () => {
     .data(chartData)
     .join("g")
     .attr("class", "chart__item");
+    
   //도넛 테두리 배경 그리기
   chartItem
     .append("path")
     .transition()
-    .duration(2000)
+    .duration(1500)
     .attrTween("d", (d: any) => {
       const originalEnd = d.endAngle;
       return (t: number) => {
@@ -214,8 +130,8 @@ const updateChart = () => {
     .data(chartData)
     .append("path")
     .transition()
-    .duration(2500)
-    .attrTween("d", (d: PieArcDatum<any>) => {
+    .duration(2000)
+    .attrTween("d", (d: any) => {
       const originalEnd = d.endAngle - 0.06;
       return (t: number) => {
         const currentAngle = d3.interpolate(
@@ -236,7 +152,7 @@ const updateChart = () => {
     .attr("transform", (d: any) => "translate(" + label.centroid(d) + ")")
     .attr("dx", (d: any) => {
       if (midAngle(d) > Math.PI) {
-        return `-${d.data.key.length * 5}px`;
+        return `-${d.data.key.length * 6}px`;
       } else return "0";
     })
     .transition()
@@ -251,7 +167,7 @@ const updateChart = () => {
     .attr("dy", "1.5em")
     .attr("dx", (d: any) => {
       if (midAngle(d) > Math.PI) {
-        return `-${d.data.key.length * 5}px`;
+        return `-${d.data.key.length * 6}px`;
       } else return "0";
     })
     .attr("transform", (d) => "translate(" + label.centroid(d) + ")")

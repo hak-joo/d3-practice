@@ -3,7 +3,7 @@
     <button @click="pushData()">추가</button>
     <button @click="popData()">삭제</button>
 
-    <DonutChart :width="450" :height="450" :data="data" />
+    <DonutChart :width="500" :height="500" :data="data" />
   </div>
 </template>
 
